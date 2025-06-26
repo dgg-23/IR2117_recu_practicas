@@ -10,15 +10,17 @@ int main(int argc, char * argv[])
     auto node = rclcpp::Node::make_shared("publisher");
     auto publisher = node->create_publisher<std_msgs::msg::String>("topic", 10);
     geometry_msgs::msg::String message;
-    rclcpp::WallRate loop_rate(500ms);
+    rclcpp::WallRate loop_rate(10ms);
 
-    while(rclcpp::ok()) {
-    	message.linear.x = 1.0;
-    	message.angular.z = 1.0;
-        publisher->publish(message);
+    int i=0, n=1000; 
+    while(rclcpp::ok() && i<n) {
+        i++;
+        message.linear.x = 0.1;
         rclcpp::spin_some(node);
         loop_rate.sleep();
     }
+    message.linear.x = 0.0;
+    publisher->publish(message);
     rclcpp::shutdown();
     return 0;
 }
