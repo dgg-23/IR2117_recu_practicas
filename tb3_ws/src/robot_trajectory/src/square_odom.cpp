@@ -6,13 +6,26 @@
 
 using namespace std::chrono_literals;
 
+double ini_x = 0.0;
+double ini_y = 0.0;
+double ini_angle = 0.0;
+
 double global_x = 0.0;
 double global_y = 0.0;
+double global_angle = 0.0;
 
 void odomCallback(const nav_msgs::msg::Odometry::SharedPtr msg)
 {
+    //obtenemos las coordenadas x e y del mensaje de odom
     global_x = msg->pose.pose.position.x;
     global_y = msg->pose.pose.position.y;
+    
+    //obtenemos el angulo de theta del mensaje odom
+    double qx = msg->pose.pose.orientation.x;
+    double qy = msg->pose.pose.orientation.y;
+    double qz = msg->pose.pose.orientation.z;
+    double qw = msg->pose.pose.orientation.w;
+    global_theta = std::atan2(2.0 * (qw * qz + qx * qy), 1.0 - 2.0 * (qy * qy + qz * qz)); //conversión de cuaternión a ángulo de orientación
 }
 
 int main(int argc, char * argv[])
