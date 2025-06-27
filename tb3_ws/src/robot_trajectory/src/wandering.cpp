@@ -9,37 +9,38 @@ int main(int argc, char * argv[])
 {
     rclcpp::init(argc,argv);
     auto node = rclcpp::Node::make_shared("publisher");
-    auto publisher_cmd_vel = node->create_publisher<std_msgs::msg::String>("/cmd_vel", 10);
-    std_msgs::msg::String message_cmd_vel;
+    auto publisher_cmd_vel = node->create_publisher<geometry_msgs::msg::Twist>("/cmd_vel", 10);
+    geometry_msgs::msg::Twist message_cmd_vel;
 
-    message_cmd_vel.data = "0";
+    message_cmd_vel.linear.x = 0.5;
+    message_cmd_vel.angular.z = 0.0;
+
+    bool obs_detectado = false;
+
     auto subscription_scan = node->create_subscription<sensor_msgs::msg::LaserScan>("/scan", 10, [&](const sensor_msgs::msg::LaserScan::SharedPtr msg)
     {
-        float min = msg->ranges[0];
         for (int i = 0; i < 18; i++)
         {
-            if (i < 9 && msg->ranges[i] < min)
+            if (msg->ranges[i] < 1.0)
             {
-                min = msg->ranges[i];
-            } 
-            else if (i >= 9 && msg->ranges[350 + (i - 9)] < min)
-            {
-                min = msg->ranges[350 + (i - 9)];
+                obs_detectado = true;
+                break;
             }
         }
-
-        std::cout << "{ranges[0..9], ranges[350..359]}: " << min << std::endl;
     });
 
     rclcpp::WallRate loop_rate(10ms);
 
-    while(rclcpp::ok())
+    while(rclcpp::ok() && not obs_detectado)
     {
         publisher_cmd_vel->publish(message_cmd_vel);
         rclcpp::spin_some(node);
         loop_rate.sleep();
     }
-    
+    message_cmd_vel.linear.x = 0.0;
+    message_cmd_vel.angular.z = 0.0;
+    publisher_cmd_vel->publish(message_cmd_vel);
+
     rclcpp::shutdown();
     return 0;
 }
