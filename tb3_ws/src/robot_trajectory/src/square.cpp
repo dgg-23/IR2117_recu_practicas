@@ -17,13 +17,18 @@ int main(int argc, char * argv[])
     double linear_speed = node->get_parameter("linear_speed").get_parameter_value().get<double>();
     double angular_speed = node->get_parameter("angular_speed").get_parameter_value().get<double>();
     
+    double square_length = 1.0; 
+    double turn_angle = M_PI_2;
+    
+    int linear_iterations = static_cast<int>((square_length / linear_speed) * 100);
+    int angular_iterations = static_cast<int>((turn_angle / (0.01 * angular_speed)));
+    
     geometry_msgs::msg::String message;
     rclcpp::WallRate loop_rate(10ms);
 
     for (int j = 0; j < 4; j++)
     {
-        int i = 0, n = 1000;
-        while (rclcpp::ok() && i < n) 
+        for (int i = 0; i < linear_iterations && rclcpp::ok(); i++) 
         {
             message.linear.x = linear_speed;
             message.angular.z = 0.0;
@@ -32,10 +37,8 @@ int main(int argc, char * argv[])
             loop_rate.sleep();
         }
         
-        int t = 0, n_turn = 1010;
-        while (rclcpp::ok() && t < n_turn)
+        for (int i = 0; i < angular_iterations && rclcpp::ok(); i++)
         {
-            t++;
             message.linear.x = 0.0;
             message.angular.z = angular_speed;
             publisher->publish(message);
