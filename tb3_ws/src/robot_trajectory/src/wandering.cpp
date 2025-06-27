@@ -41,6 +41,23 @@ int main(int argc, char * argv[])
     message_cmd_vel.angular.z = 0.0;
     publisher_cmd_vel->publish(message_cmd_vel);
 
+    while (rclcpp::ok())
+    {
+        if (obs_detectado) 
+        {
+            message_cmd_vel.linear.x = 0.0;
+            message_cmd_vel.angular.z = 0.5;
+        }
+        else
+        {
+            message_cmd_vel.linear.x = 0.5;
+            message_cmd_vel.angular.z = 0.0;
+        }
+        publisher_cmd_vel->publish(message_cmd_vel);
+        rclcpp::spin_some(node);
+        loop_rate.sleep();
+    }
+
     rclcpp::shutdown();
     return 0;
 }
