@@ -50,26 +50,37 @@ int main(int argc, char * argv[])
     double angular_speed = node->get_parameter("angular_speed").get_parameter_value().get<double>();
     double turn_angle = node->get_parameter("turn_angle").get_parameter_value().get<double>();
     
+    double distance_traveled = 0.0;
+    double target_distance = square_length;
+    
     int linear_iterations = static_cast<int>((square_length / linear_speed) * 100);
     int angular_iterations = static_cast<int>((turn_angle / (0.01 * angular_speed)));
     
+    geometry_msgs::msg::Twist message;
     rclcpp::WallRate loop_rate(10ms);
+    
+    double calculate_distance 0.0;
+    double calculate_angle = 0.0;
 
     for (int j = 0; j < 4; j++)
     {
+        distance_travelled = 0.0;
+        angle_turned = 0.0;
         ini_x = global_x;
         ini_y = global_y;
         ini_angle = global_angle;
         std::cout << "Initial position: (" << ini_x << ", " << ini_y << ")" << " Initial θ: " << ini_angle << std::endl;
         
-        for (int i = 0; i < linear_iterations && rclcpp::ok(); i++) 
+        while ((rclcpp::ok()) && (distance_travelled < target_distance)) 
         {
-            geometry_msgs::msg::Twist message;
             message.linear.x = linear_speed;
             message.angular.z = 0.0;
             publisher->publish(message);
             rclcpp::spin_some(node);
             loop_rate.sleep();
+            
+            distance_travelled = Distance(initial_x, initial_y, global_x, global_y);
+            std::cout << "Distance travelled: " << distance_travelled << std::endl;
             
             calculate_distance = Distance(initial_x, initial_y, global_x, global_y);
             calculate_angle = global_angle - ini_angle
@@ -77,10 +88,9 @@ int main(int argc, char * argv[])
             std::cout << "distance between the initial and current angle: " << calculate_angle << std::endl;
         }
         
-        geometry_msgs::msg::Twist stop_msg;
-        stop_msg.linear.x = 0.0;
-        stop_msg.angular.z = 0.0;
-        rclcpp::sleep_for(500ms);
+        message.linear.x = 0.0;
+        message.angular.z = 0.0;
+        publisher->publish(message);
         
         for (int i = 0; i < angular_iterations && rclcpp::ok(); i++)
         {
