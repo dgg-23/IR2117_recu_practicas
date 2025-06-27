@@ -24,6 +24,7 @@ int main(int argc, char * argv[])
     int linear_iterations = static_cast<int>((square_length / linear_speed) * 100);
     int angular_iterations = static_cast<int>((turn_angle / (0.01 * angular_speed)));
     
+    geometry_msgs::msg::Twist message;
     rclcpp::WallRate loop_rate(10ms);
 
     for (int j = 0; j < 4; j++)
