@@ -11,14 +11,15 @@ int main(int argc, char * argv[])
     auto node = rclcpp::Node::make_shared("square");
     auto publisher = node->create_publisher<geometry_msgs::msg::Twist>("cmd_vel", 10);
     
+    node->declare_parameter("square_length", 1.0);
     node->declare_parameter("linear_speed", 0.1);
     node->declare_parameter("angular_speed", M_PI / 20);
+    node->declare_parameter("turn_angle", 3.14 / 2);
     
+    double square_length = node->get_parameter("square_length").get_parameter_value().get<double>();
     double linear_speed = node->get_parameter("linear_speed").get_parameter_value().get<double>();
     double angular_speed = node->get_parameter("angular_speed").get_parameter_value().get<double>();
-    
-    double square_length = 1.0; 
-    double turn_angle = M_PI_2;
+    double turn_angle = node->get_parameter("turn_angle").get_parameter_value().get<double>();
     
     int linear_iterations = static_cast<int>((square_length / linear_speed) * 100);
     int angular_iterations = static_cast<int>((turn_angle / (0.01 * angular_speed)));
