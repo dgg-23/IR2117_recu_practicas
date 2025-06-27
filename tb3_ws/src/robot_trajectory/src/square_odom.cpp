@@ -6,17 +6,19 @@
 
 using namespace std::chrono_literals;
 
+double global_x = 0.0;
+double global_y = 0.0;
 
 void odomCallback(const nav_msgs::msg::Odometry::SharedPtr msg)
 {
-    auto position = msg->pose.pose.position;
-    RCLCPP_INFO(rclcpp::get_logger("rclcpp"), "Position: (%f, %f)", position.x, position.y);
+    global_x = msg->pose.pose.position.x;
+    global_y = msg->pose.pose.position.y;
 }
 
 int main(int argc, char * argv[])
 {
     rclcpp::init(argc,argv);
-    auto node = rclcpp::Node::make_shared("square");
+    auto node = rclcpp::Node::make_shared("square_odom");
     auto publisher = node->create_publisher<geometry_msgs::msg::Twist>("cmd_vel", 10);
     auto subscriber = node->create_subscription<nav_msgs::msg::Odometry>("odom", 10, odomCallback);
     
