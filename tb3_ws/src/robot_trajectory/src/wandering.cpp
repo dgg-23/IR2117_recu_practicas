@@ -18,15 +18,17 @@ int main(int argc, char * argv[])
         float min = msg->ranges[0];
         for (int i = 0; i < 18; i++)
         {
-            if (i < 9)
+            if (i < 9 && msg->ranges[i] < min)
             {
-                std::cout << "range [0..9]: " << msg->ranges[i] << std::endl;
-            }
-            else 
+                min = msg->ranges[i];
+            } 
+            else if (i >= 9 && msg->ranges[350 + (i - 9)] < min)
             {
-                std::cout << "range [350..359]: " << msg->ranges[350 + (i - 9)] << std::endl;
+                min = msg->ranges[350 + (i - 9)];
             }
         }
+
+        std::cout << "{ranges[0..9], ranges[350..359]}: " << min << std::endl;
     });
 
     rclcpp::WallRate loop_rate(10ms);
@@ -37,6 +39,7 @@ int main(int argc, char * argv[])
         rclcpp::spin_some(node);
         loop_rate.sleep();
     }
+    
     rclcpp::shutdown();
     return 0;
 }
