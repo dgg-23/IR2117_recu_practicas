@@ -72,7 +72,9 @@ int main(int argc, char * argv[])
             loop_rate.sleep();
             
             calculate_distance = Distance(initial_x, initial_y, global_x, global_y);
+            calculate_angle = global_angle - ini_angle
             std::cout << "distance between the initial and current positions: " << calculate_distance << std::endl;
+            std::cout << "distance between the initial and current angle: " << calculate_angle << std::endl;
         }
         
         geometry_msgs::msg::Twist stop_msg;
