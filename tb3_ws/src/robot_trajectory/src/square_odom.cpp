@@ -1,15 +1,24 @@
+#include <cmath>
 #include <chrono>
 #include "rclcpp/rclcpp.hpp"
 #include "geometry_msgs/msg/twist.hpp"
-#include <cmath>
+#include "nav_msgs/msg/odometry.hpp"
 
 using namespace std::chrono_literals;
+
+
+void odomCallback(const nav_msgs::msg::Odometry::SharedPtr msg)
+{
+    auto position = msg->pose.pose.position;
+    RCLCPP_INFO(rclcpp::get_logger("rclcpp"), "Position: (%f, %f)", position.x, position.y);
+}
 
 int main(int argc, char * argv[])
 {
     rclcpp::init(argc,argv);
     auto node = rclcpp::Node::make_shared("square");
     auto publisher = node->create_publisher<geometry_msgs::msg::Twist>("cmd_vel", 10);
+    auto subscriber = node->create_subscription<nav_msgs::msg::Odometry>("odom", 10, odomCallback);
     
     node->declare_parameter("square_length", 1.0);
     node->declare_parameter("linear_speed", 0.1);

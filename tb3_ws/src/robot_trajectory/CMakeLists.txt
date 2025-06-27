@@ -18,13 +18,14 @@ endif()
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(geometry_msgs REQUIRED)
+find_package(nav_msgs REQUIRED)
 
 
 add_executable(square src/square.cpp)
-ament_target_dependencies(square rclcpp std_msgs)
+ament_target_dependencies(square rclcpp geometry_msgs)
 
 add_executable(square_odom src/square_odom.cpp)
-ament_target_dependencies(square_odom rclcpp std_msgs)
+ament_target_dependencies(square_odom rclcpp nav_msgs)
 
 install(TARGETS
 	square
