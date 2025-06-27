@@ -29,7 +29,7 @@ install(TARGETS
 	DESTINATION lib/${PROJECT_NAME}
 )
 
-install(DIRECTORY launch
+install(DIRECTORY launch                     #para el correcto funcionamiento del launch file
   DESTINATION share/${PROJECT_NAME})
 
 if(BUILD_TESTING)
