@@ -28,6 +28,11 @@ void odomCallback(const nav_msgs::msg::Odometry::SharedPtr msg)
     global_theta = std::atan2(2.0 * (qw * qz + qx * qy), 1.0 - 2.0 * (qy * qy + qz * qz)); //conversión de cuaternión a ángulo de orientación
 }
 
+double Distance(double x1, double y1, double x2, double y2)
+{
+    return std::sqrt(std::pow(x2 - x1, 2) + std::pow(y2 - y1, 2));
+}
+
 int main(int argc, char * argv[])
 {
     rclcpp::init(argc,argv);
@@ -64,7 +69,10 @@ int main(int argc, char * argv[])
             message.angular.z = 0.0;
             publisher->publish(message);
             rclcpp::spin_some(node);
-            loop_rate.sleep();  
+            loop_rate.sleep();
+            
+            calculate_distance = Distance(initial_x, initial_y, global_x, global_y);
+            std::cout << "distance between the initial and current positions: " << calculate_distance << std::endl;
         }
         
         geometry_msgs::msg::Twist stop_msg;
