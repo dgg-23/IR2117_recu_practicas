@@ -15,15 +15,24 @@ int main(int argc, char * argv[])
     message_cmd_vel.data = "0";
     auto subscription_scan = node->create_subscription<sensor_msgs::msg::LaserScan>("/scan", 10, [&](const sensor_msgs::msg::LaserScan::SharedPtr msg)
     {
-        std::cout << "[0] " << msg->ranges[0] << std::endl;
-        std::cout << "[90] " << msg->ranges[msg->ranges.size() / 4] << std::endl;
-        std::cout << "[180] " << msg->ranges[msg->ranges.size() / 2] << std::endl;
-        std::cout << "[270] " << msg->ranges[(msg->ranges.size() * 3) / 4] << std::endl;
+        float min = msg->ranges[0];
+        for (int i = 0; i < 18; i++)
+        {
+            if (i < 9)
+            {
+                std::cout << "range [0..9]: " << msg->ranges[i] << std::endl;
+            }
+            else 
+            {
+                std::cout << "range [350..359]: " << msg->ranges[350 + (i - 9)] << std::endl;
+            }
+        }
     });
 
     rclcpp::WallRate loop_rate(10ms);
 
-    while(rclcpp::ok()) {
+    while(rclcpp::ok())
+    {
         publisher_cmd_vel->publish(message_cmd_vel);
         rclcpp::spin_some(node);
         loop_rate.sleep();
