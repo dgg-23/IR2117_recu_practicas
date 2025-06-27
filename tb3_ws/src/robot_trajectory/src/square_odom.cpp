@@ -52,6 +52,11 @@ int main(int argc, char * argv[])
 
     for (int j = 0; j < 4; j++)
     {
+        ini_x = global_x;
+        ini_y = global_y;
+        ini_angle = global_angle;
+        std::cout << "Initial position: (" << ini_x << ", " << ini_y << ")" << " Initial θ: " << ini_angle << std::endl;
+        
         for (int i = 0; i < linear_iterations && rclcpp::ok(); i++) 
         {
             geometry_msgs::msg::Twist message;
@@ -59,7 +64,7 @@ int main(int argc, char * argv[])
             message.angular.z = 0.0;
             publisher->publish(message);
             rclcpp::spin_some(node);
-            loop_rate.sleep();
+            loop_rate.sleep();  
         }
         
         geometry_msgs::msg::Twist stop_msg;
