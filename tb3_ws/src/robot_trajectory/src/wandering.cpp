@@ -7,7 +7,9 @@
 using namespace std::chrono_literals;
 
 float min_range_l = std::numeric_limits<float>::max();
-float min_range_d = std::numeric_limits<float>::max();
+float min_range_r = std::numeric_limits<float>::max();
+bool turn_left = false;
+bool turn_right = false;
 
 void scanCallback(const sensor_msgs::msg::LaserScan::SharedPtr msg) //min ranges
 {
@@ -57,6 +59,23 @@ int main(int argc, char * argv[])
                 break;
             }
         }
+
+        if (!obs_detectado)
+        {
+            turn_left = false;
+            turn_right = false;
+        }
+        else
+        {
+            if (min_range_l > min_range_r)
+            {
+                turn_left = true;
+            }
+            else
+            {
+                turn_right = true;
+            }
+        }
     });
 
     rclcpp::WallRate loop_rate(10ms);
@@ -73,15 +92,15 @@ int main(int argc, char * argv[])
 
     while (rclcpp::ok())
     {
-        if (obs_detectado) 
+        if (turn_left) 
         {
-            if (min_range_l > min_range_d) //gira izq
+            if (min_range_l > min_range_r) //gira izq
             {
                 message_cmd_vel.linear.x = 0.0;
                 message_cmd_vel.angular.z = 0.5;
             }
         }
-        else //gira derecha
+        else if(turn_right) //gira derecha
         {
             message_cmd_vel.linear.x = 0.5;
             message_cmd_vel.angular.z = 0.0;
