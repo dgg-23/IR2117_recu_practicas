@@ -45,6 +45,8 @@ int main(int argc, char * argv[])
 
     bool obs_detectado = false;
 
+    MinRanges(msg);
+
     auto subscription_scan = node->create_subscription<sensor_msgs::msg::LaserScan>("/scan", 10, [&](const sensor_msgs::msg::LaserScan::SharedPtr msg)
     {
         for (int i = 0; i < 18; i++)
@@ -73,10 +75,13 @@ int main(int argc, char * argv[])
     {
         if (obs_detectado) 
         {
-            message_cmd_vel.linear.x = 0.0;
-            message_cmd_vel.angular.z = 0.5;
+            if (min_range_l > min_range_d) //gira izq
+            {
+                message_cmd_vel.linear.x = 0.0;
+                message_cmd_vel.angular.z = 0.5;
+            }
         }
-        else
+        else //gira derecha
         {
             message_cmd_vel.linear.x = 0.5;
             message_cmd_vel.angular.z = 0.0;
