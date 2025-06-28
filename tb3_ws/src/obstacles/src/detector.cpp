@@ -7,7 +7,9 @@ std::shared_ptr< rclcpp::Publisher<example_interfaces::msg::Bool> > publisher;
 
 void topic_callback(const std_msgs::msg::String::SharedPtr msg)
 {
-    std::cout << msg->data << std::endl;
+    example_interfaces::msg::Boo out_msg;
+    out_msg.data = false;
+    publisher->publish(out_msg);
 }
 
 int main(int argc, char * argv[])
