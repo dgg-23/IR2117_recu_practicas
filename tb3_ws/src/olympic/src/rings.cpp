@@ -1,5 +1,7 @@
 #include <chrono>
 #include <cmath>
+#include <array>
+#include <thread>
 #include "rclcpp/rclcpp.hpp"
 #include "std_msgs/msg/string.hpp"
 #include "geometry_msgs/msg/twist.hpp"
@@ -28,60 +30,58 @@ int main(int argc, char * argv[])
    //cambiar color
   auto client_pen = node->create_client<SetPen>("/turtle1/set_pen");
   client_pen->wait_for_service();
-
   //teletransportar
   auto client_teleport = node->create_client<TeleportAbsolute>("/turtle1/teleport_absolute");
   client_teleport->wait_for_service();
 
-  auto request_setpen = std::make_shared<SetPen::Request>();
-  request_setpen->r = 0;
-  request_setpen->g = 0;
-  request_setpen->b = 255;
-  request_setpen->width = 3;
-  request_setpen->off = 0;
+  std::array<std::array<float, 2>, 3> positions = {{
+      {3.3f, 5.5f},  // Azul
+      {5.5f, 5.5f},  // Negro
+      {7.7f, 5.5f}   // Rojo
+  }};
 
-  client_pen->async_send_request(request_setpen);
-  std::this_thread::sleep_for(100ms);
+  std::array<std::array<int, 3>, 3> colors = {{
+      {0, 0, 255},   // Azul
+      {0, 0, 0},     // Negro
+      {255, 0, 0}    // Rojo
+  }};
 
-  //dibuja el circulo
-  for (int i = 0; i < size; i++)
+  auto setpen = std::make_shared<SetPen::Request>();
+  setpen->width = 3;
+
+  auto teleport = std::make_shared<TeleportAbsolute::Request>();
+  teleport->theta = 0.0;
+
+  for (int i = 0; i < 3; i++)
   {
-    message.linear.x = linear_speed;
-    message.angular.z = angular_speed;
-    publisher->publish(message);
-    rclcpp::spin_some(node);
-    loop_rate.sleep();
-  }
+    //apagar lapiz
+    request_setpen->off = 1;
+    setpen->r = colors[i][0];
+    setpen->g = colors[i][1];
+    setpen->b = colors[i][2];
+    client_pen->async_send_request(request_setpen);
+    std::this_thread::sleep_for(200ms);
 
-  //apagar lapiz
-  request_setpen->off = 1;
-  client_pen->async_send_request(request_setpen);
-  std::this_thread::sleep_for(200ms);
+    //tp al segundo circulo + encender lapiz
+    teleport->x = positions[i][0];
+    teleport->y = positions[i][1];;
+    client_teleport->async_send_request(request_teleport);
+    std::this_thread::sleep_for(1s);
 
-  //tp al segundo circulo + encender lapiz
-  auto request_teleport = std::make_shared<TeleportAbsolute::Request>();
-  request_teleport->x = 5.5;
-  request_teleport->y = 5.5;
-  request_teleport->theta = 0.0;
-  client_teleport->async_send_request(request_teleport);
-  std::this_thread::sleep_for(1s);
+    //encender lapiz
+    request_setpen->off = 0;
+    client_pen->async_send_request(request_setpen);
+    std::this_thread::sleep_for(100ms);
 
-  //color negro
-  request_setpen->r = 0;
-  request_setpen->g = 0;
-  request_setpen->b = 0;
-  request_setpen->off = 0;
-  client_pen->async_send_request(request_setpen);
-  std::this_thread::sleep_for(100ms);
-
-  //segundo circulo
-  for (int i = 0; i < size; i++)
-  {
-    message.linear.x = linear_speed;
-    message.angular.z = angular_speed;
-    publisher->publish(message);
-    rclcpp::spin_some(node);
-    loop_rate.sleep();
+    //dibujar circulo
+    for (int i = 0; i < size; i++)
+    {
+      message.linear.x = linear_speed;
+      message.angular.z = angular_speed;
+      publisher->publish(message);
+      rclcpp::spin_some(node);
+      loop_rate.sleep();
+    }
   }
 
   //stop
