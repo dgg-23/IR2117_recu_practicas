@@ -38,14 +38,16 @@ int main(int argc, char * argv[])
       {3.3f, 5.5f},  // Azul
       {5.5f, 5.5f},  // Negro
       {7.7f, 5.5f},  // Rojo
-      {4.4f, 4.0f}   // amarillo
+      {4.4f, 4.0f},  // Amarillo
+      {6.6f, 4.0f}   // Verde 
   }};
 
   std::array<std::array<int, 3>, 3> colors = {{
       {0, 0, 255},   // Azul
       {0, 0, 0},     // Negro
-      {255, 0, 0}    // Rojo
-      {255, 255, 0}  // Amarillo
+      {255, 0, 0},   // Rojo
+      {255, 255, 0}, // Amarillo
+      {0, 255, 0}    // Verde
   }};
 
   auto setpen = std::make_shared<SetPen::Request>();
@@ -54,7 +56,7 @@ int main(int argc, char * argv[])
   auto teleport = std::make_shared<TeleportAbsolute::Request>();
   teleport->theta = 0.0;
 
-  for (int i = 0; i < 4; i++)
+  for (int i = 0; i < 5; i++)
   {
     //apagar lapiz
     request_setpen->off = 1;
