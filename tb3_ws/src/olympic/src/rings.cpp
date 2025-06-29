@@ -6,6 +6,7 @@
 
 using namespace std::chrono_literals;
 using turtlesim::srv::SetPen;
+using turtlesim::srv::TeleportAbsolute;
 
 int main(int argc, char * argv[])
 {
@@ -24,8 +25,13 @@ int main(int argc, char * argv[])
   double angular_speed = 1.0 / radius;
   int size = static_cast<int>(radius * 20.0); //para modificar el tiempo que tiene que estar activo en funcion del radio
 
+   //cambiar color
   auto client_pen = node->create_client<SetPen>("/turtle1/set_pen");
   client_pen->wait_for_service();
+
+  //teletransportar
+  auto client_teleport = node->create_client<TeleportAbsolute>("/turtle1/teleport_absolute");
+  client_teleport->wait_for_service();
 
   auto request_setpen = std::make_shared<SetPen::Request>();
   request_setpen->r = 0;
