@@ -93,6 +93,17 @@ int main(int argc, char * argv[])
   message.angular.z = 0.0;
   publisher->publish(message);
 
+  setpen->off = 1;
+  client_pen->async_send_request(setpen);
+  std::this_thread::sleep_for(200ms);
+
+  //quitar tortuga
+  teleport->x = 2.0;
+  teleport->y = 2.0;
+  teleport->theta = 0.0;
+  client_teleport->async_send_request(teleport);
+  std::this_thread::sleep_for(500ms);
+
   rclcpp::shutdown();
   return 0;
 }
