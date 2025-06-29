@@ -66,6 +66,24 @@ int main(int argc, char * argv[])
   client_teleport->async_send_request(request_teleport);
   std::this_thread::sleep_for(1s);
 
+  //color negro
+  request_setpen->r = 0;
+  request_setpen->g = 0;
+  request_setpen->b = 0;
+  request_setpen->off = 0;
+  client_pen->async_send_request(request_setpen);
+  std::this_thread::sleep_for(100ms);
+
+  //segundo circulo
+  for (int i = 0; i < size; i++)
+  {
+    message.linear.x = linear_speed;
+    message.angular.z = angular_speed;
+    publisher->publish(message);
+    rclcpp::spin_some(node);
+    loop_rate.sleep();
+  }
+
   //stop
   message.linear.x = 0.0;
   message.angular.z = 0.0;
