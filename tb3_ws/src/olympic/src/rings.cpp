@@ -43,8 +43,6 @@ int main(int argc, char * argv[])
   client_pen->async_send_request(request_setpen);
   std::this_thread::sleep_for(100ms);
 
-
-
   //dibuja el circulo
   for (int i = 0; i < size; i++)
   {
@@ -54,6 +52,19 @@ int main(int argc, char * argv[])
     rclcpp::spin_some(node);
     loop_rate.sleep();
   }
+
+  //apagar lapiz
+  request_setpen->off = 1;
+  client_pen->async_send_request(request_setpen);
+  std::this_thread::sleep_for(200ms);
+
+  //tp al segundo circulo + encender lapiz
+  auto request_teleport = std::make_shared<TeleportAbsolute::Request>();
+  request_teleport->x = 5.5;
+  request_teleport->y = 5.5;
+  request_teleport->theta = 0.0;
+  client_teleport->async_send_request(request_teleport);
+  std::this_thread::sleep_for(1s);
 
   //stop
   message.linear.x = 0.0;
