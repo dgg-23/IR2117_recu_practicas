@@ -27,6 +27,18 @@ int main(int argc, char * argv[])
   auto client_pen = node->create_client<SetPen>("/turtle1/set_pen");
   client_pen->wait_for_service();
 
+  auto request_setpen = std::make_shared<SetPen::Request>();
+  request_setpen->r = 0;
+  request_setpen->g = 0;
+  request_setpen->b = 255;
+  request_setpen->width = 3;
+  request_setpen->off = 0;
+
+  client_pen->async_send_request(request_setpen);
+  std::this_thread::sleep_for(100ms);
+
+
+
   //dibuja el circulo
   for (int i = 0; i < size; i++)
   {
