@@ -5,6 +5,8 @@
 #include "rclcpp/rclcpp.hpp"
 #include "std_msgs/msg/string.hpp"
 #include "geometry_msgs/msg/twist.hpp"
+#include "turtlesim/srv/set_pen.hpp"
+#include "turtlesim/srv/teleport_absolute.hpp"
 
 using namespace std::chrono_literals;
 using turtlesim::srv::SetPen;
@@ -27,14 +29,14 @@ int main(int argc, char * argv[])
   double angular_speed = 1.0 / radius;
   int size = static_cast<int>(radius * 20.0); //para modificar el tiempo que tiene que estar activo en funcion del radio
 
-   //cambiar color
+  //cambiar color
   auto client_pen = node->create_client<SetPen>("/turtle1/set_pen");
   client_pen->wait_for_service();
   //teletransportar
   auto client_teleport = node->create_client<TeleportAbsolute>("/turtle1/teleport_absolute");
   client_teleport->wait_for_service();
 
-  std::array<std::array<float, 2>, 3> positions = {{
+  std::array<std::array<float, 2>, 5> positions = {{
       {3.3f, 5.5f},  // Azul
       {5.5f, 5.5f},  // Negro
       {7.7f, 5.5f},  // Rojo
@@ -42,7 +44,7 @@ int main(int argc, char * argv[])
       {6.6f, 4.0f}   // Verde 
   }};
 
-  std::array<std::array<int, 3>, 3> colors = {{
+  std::array<std::array<int, 3>, 5> colors = {{
       {0, 0, 255},   // Azul
       {0, 0, 0},     // Negro
       {255, 0, 0},   // Rojo
@@ -54,27 +56,26 @@ int main(int argc, char * argv[])
   setpen->width = 3;
 
   auto teleport = std::make_shared<TeleportAbsolute::Request>();
-  teleport->theta = 0.0;
 
   for (int i = 0; i < 5; i++)
   {
     //apagar lapiz
-    request_setpen->off = 1;
+    setpen->off = 1;
     setpen->r = colors[i][0];
     setpen->g = colors[i][1];
     setpen->b = colors[i][2];
-    client_pen->async_send_request(request_setpen);
+    client_pen->async_send_request(setpen);
     std::this_thread::sleep_for(200ms);
 
     //tp al segundo circulo + encender lapiz
     teleport->x = positions[i][0];
-    teleport->y = positions[i][1];;
-    client_teleport->async_send_request(request_teleport);
+    teleport->y = positions[i][1];
+    client_teleport->async_send_request(teleport);
     std::this_thread::sleep_for(1s);
 
     //encender lapiz
-    request_setpen->off = 0;
-    client_pen->async_send_request(request_setpen);
+    setpen->off = 0;
+    client_pen->async_send_request(setpen);
     std::this_thread::sleep_for(100ms);
 
     //dibujar circulo
