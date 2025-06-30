@@ -3,6 +3,7 @@
 #include "rclcpp/rclcpp.hpp"
 #include "geometry_msgs/msg/twist.hpp"
 #include "nav_msgs/msg/odometry.hpp"
+#include <iostream>
 
 using namespace std::chrono_literals;
 
@@ -89,6 +90,7 @@ int main(int argc, char * argv[])
         message.linear.x = 0.0;
         message.angular.z = 0.0;
         publisher->publish(message);
+        ini_a = global_a;
         
         while ((rclcpp::ok()) && (angle_turned < target_angle))
         {
