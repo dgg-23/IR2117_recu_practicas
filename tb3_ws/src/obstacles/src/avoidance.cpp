@@ -4,6 +4,7 @@
 #include "geometry_msgs/msg/twist.hpp"
 #include "example_interfaces/msg/bool.hpp"
 #include <random>
+#include <cmath>
 
 using namespace std::chrono_literals;
 
@@ -51,7 +52,7 @@ int main(int argc, char * argv[])
 		switch (state)
         {
             case FORWARD:
-                message.linear.x = 0.5;
+                message.linear.x = 0.2;
                 message.angular.z = 0.0;
                 if (front_obstacle)
                 {
@@ -66,7 +67,7 @@ int main(int argc, char * argv[])
                     else
                     {
                         // Tria aleatoriamente si girar der o izq
-                        if (rand() >= 0.5)
+                        if (rand() % 2 == 0)
                         {
                             state = TURN_LEFT;
                         }
@@ -80,7 +81,7 @@ int main(int argc, char * argv[])
                 
             case TURN_LEFT:
                 message.linear.x = 0.0;
-                message.angular.z = 0.5;
+                message.angular.z = 0.2;
                 if (!front_obstacle)
                 {
                     state = FORWARD;
@@ -89,7 +90,7 @@ int main(int argc, char * argv[])
 
             case TURN_RIGHT:
                 message.linear.x = 0.0;
-                message.angular.z = -0.5;
+                message.angular.z = -0.2;
                 if (!front_obstacle)
                 {
                     state = FORWARD;

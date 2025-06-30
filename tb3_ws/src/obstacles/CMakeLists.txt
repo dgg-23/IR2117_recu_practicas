@@ -19,9 +19,10 @@ find_package(rclcpp REQUIRED)
 find_package(sensor_msgs REQUIRED)
 find_package(example_interfaces REQUIRED)
 find_package(geometry_msgs REQUIRED)
+find_package(std_msgs REQUIRED)
 
 add_executable(detector src/detector.cpp)
-ament_target_dependencies(detector rclcpp sensor_msgs example_interfaces)
+ament_target_dependencies(detector rclcpp sensor_msgs example_interfaces std_msgs)
 
 add_executable(avoidance src/avoidance.cpp)
 ament_target_dependencies(avoidance rclcpp geometry_msgs example_interfaces)

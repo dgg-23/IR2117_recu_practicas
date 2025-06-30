@@ -11,6 +11,8 @@ float min_range_r = std::numeric_limits<float>::max();
 bool turn_left = false;
 bool turn_right = false;
 
+sensor_msgs::msg::LaserScan::SharedPtr last_scan_msg;
+
 void scanCallback(const sensor_msgs::msg::LaserScan::SharedPtr msg) //min ranges
 {
     min_range_l = std::numeric_limits<float>::max(); //min ranges[0..9]
@@ -47,7 +49,7 @@ int main(int argc, char * argv[])
 
     bool obs_detectado = false;
 
-    MinRanges(msg);
+    //MinRanges(msg);
 
     auto subscription_scan = node->create_subscription<sensor_msgs::msg::LaserScan>("/scan", 10, [&](const sensor_msgs::msg::LaserScan::SharedPtr msg)
     {
